@@ -1,0 +1,72 @@
+METADATA
+Name:           QEmodel                                                              
+Description:    Model for "The central bank balance sheet as a policy tool" 
+Author:         Rich                                                                            
+
+MODEL VARIABLES
+Output gap:                             x               
+Inflation:                              pie                       
+Policy Rate:                            ir              
+QE:                                     q               
+Natural rate (demand shock):		rstar               
+IS curve multiplier:			mux
+First difference of Q:			Dq
+Dummy QE instrument:			qInstr
+Spread process:				varsigma
+State contingent multiplier, low state: muxL
+State contingent multiplier, high state: muxH
+Record of varsigma: 			varsigChk
+
+SHOCKS
+Demand shock:   etarstar    
+Spreads shock:	etavarsigma
+Policy shock:   etar    
+QE shock:       etaq    
+
+PARAMETERS
+Discount factor:                        		beta:		0.9925
+Interest elasticity of demand:                          sigma:          1     
+%Long bond decay rate:                                   chi:            0.975
+%Share of long term debt:                                delta:          1       
+Portfolio share adjustment cost:                        nu:             0.01       
+Portfolio change adjustment cost:                       xi:             0.0025
+Slope of NKPC:						kappa:		0.05
+Taylor rule response to inflation:             		phipi:   	1.5     
+Taylor rule response to output gap:                     phiy:           0.25    
+Taylor rule response to chg in output gap:              phideltay:      0.25    
+Degree of TR smoothing:                                 rhor:           0.85   
+QE persistence:                                         rhoq:           0.999   
+Persistence of demand process:                          rhorstar:	0.85 
+Standard deviation of demand shock:                     sigmarstar:	0.0016 
+Weight on output gap in loss function:			lambda:		0.25
+Persistence of spreads shock:				rhovarsigma:	0.5
+Standard deviation of spreads shock:			sigmavarsigma:  0.001
+
+MODEL EQUATIONS
+IS curve:                               x{t} = x{t+1} - sigma*(ir{t} - nu*q{t} - xi*(q{t}-q{t-1}) - pie{t+1} + varsigma{t} - rstar{t})     
+Phillips curve:                         pie{t} = beta*pie{t+1} + kappa*x{t} 
+
+% Simple rules to close model
+Taylor rule:                            ir{t} = rhor*ir{t-1}+(1-rhor)*(phipi*pie{t}+phiy*x{t}+phideltay*(x{t}-x{t-1}))+ etar{t}                                
+QE rule:                                q{t} = rhoq*q{t-1}+etaq{t}      
+
+% Forcing processes
+Demand process:                         rstar{t} = rhorstar*rstar{t-1} + sigmarstar*etarstar{t}
+Spread process:				varsigma{t} = rhovarsigma*varsigma{t-1} + sigmavarsigma*etavarsigma{t}
+
+% Reporting/technical variables
+FOC for x:				omegax*x{t} + kappa*omegapi*pie{t} + mux{t} = 0
+First difference of Q:			Dq{t} = q{t}-q{t-1}
+QE instrument:				qInstr{t} = q{t}
+
+% For state contingent tracking
+State contingent multiplier, low state: muxL{t} = mux{t}
+State contingent multiplier, high state: muxH{t} = mux{t}
+Record of varsigma: 			varsigChk{t} = varsigma{t}
+
+
+STEADY STATES & PARAMETER TRANSFORMATIONS
+Weight on inflation in loss function: 	omegapi:	1
+Weight on output gap in loss function: 	omegax: 	lambda
+
+
